@@ -3,3 +3,11 @@ body {
 	margin: 0;
 	padding: 0;
 }
+
+/*
+ * Styles scoped to the light DOM always apply to and override shadow DOM styles.
+ */
+h1,
+h2 {
+	text-align: center;
+}

@@ -21,6 +21,8 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 	 * A helper method to set any initial state properties/data the component needs.
 	 */
 	setInitialState() {
+		this.loop = this.hasAttribute( 'loop' );
+		this.translucent = this.hasAttribute( 'translucent' );
 		this.totalSlides = this.querySelectorAll( 'img' ).length;
 		this.currentSlide = 0;
 	}
@@ -35,7 +37,8 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 	 */
 	generateMarkup( shadowDOM ) {
 		const style = document.createElement( 'style' );
-		const container = document.createElement( 'header' );
+		const container = document.createElement( 'section' );
+		const title = document.createElement( 'slot' );
 		const slides = document.createElement( 'slot' );
 		
 		// Cache these elements for future interaction.
@@ -43,11 +46,16 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 		this.prev = document.createElement( 'button' );
 		this.next = document.createElement( 'button' );
 		
-		this.prev.className = 'prev inactive';
-		this.prev.setAttribute( 'name', 'prev' );
-		this.prev.setAttribute( 'aria-disabled', 'true' );
-		this.prev.setAttribute( 'disabled', '' );
+		this.prev.className = 'prev';
 		this.prev.textContent = '⇠ Previous';
+
+		if ( ! this.loop ) {
+			this.prev.classList.add( 'inactive' );
+			this.prev.setAttribute( 'name', 'prev' );
+			this.prev.setAttribute( 'aria-disabled', 'true' );
+			this.prev.setAttribute( 'disabled', '' );
+		}
+
 		this.next.className = 'next';
 		this.next.setAttribute( 'name', 'next' );
 		this.next.setAttribute( 'aria-disabled', 'false' );
@@ -55,13 +63,17 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 		
 		container.className = 'hero-slider';
 		this.div.className = 'slides';
+		if ( this.translucent ) this.div.classList.add( 'translucent' );
 
+		title.setAttribute( 'id', 'hero-title' );
+		title.setAttribute( 'name', 'title' );
 		slides.setAttribute( 'id', 'slides' );
 		slides.setAttribute( 'name', 'slides' );
 
 		style.textContent = this.generateStyles();
 
 		this.div.appendChild( slides );
+		container.appendChild( title );
 		container.appendChild( this.prev );
 		container.appendChild( this.next );
 		container.appendChild( this.div );
@@ -92,18 +104,29 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 		const action = button.getAttribute( 'name' );
 
 		if ( 'next' === action ) {
-			this.currentSlide ++;
-			this.prev.classList.remove( 'inactive' );
-			this.prev.setAttribute( 'aria-disabled', 'false' );
-			this.prev.removeAttribute( 'disabled' );
-
-			if ( this.currentSlide === this.totalSlides - 1 ) {
-				this.next.classList.add( 'inactive' );
-				this.next.setAttribute( 'aria-disabled', 'true' );
-				this.next.setAttribute( 'disabled', '' );
-			}
+			this.goNext();
 		} else {
-			this.currentSlide --;
+			this.goPrev();
+		}
+		
+		// Loop slides when reaching the beginning/end.
+		if ( 0 > this.currentSlide ) {
+			this.currentSlide = this.totalSlides - 1;
+		}
+		if ( this.currentSlide === this.totalSlides ) {
+			this.currentSlide = 0;
+		}
+
+		console.log( this.currentSlide );
+
+		// Move the slides according to currently active slide.
+		this.div.style = `transform: translateX(-${ this.currentSlide * 100 }%)`;
+	}
+
+	goPrev() {
+		this.currentSlide --;
+
+		if ( ! this.loop ) {
 			this.next.classList.remove( 'inactive' );
 			this.next.setAttribute( 'aria-disabled', 'false' );
 			this.next.removeAttribute( 'disabled' );
@@ -114,16 +137,31 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 				this.prev.setAttribute( 'disabled', '' );
 			}
 		}
+	}
 
-		// Move the slides according to currently active slide.
-		this.div.style = `transform: translateX(-${ this.currentSlide * 100 }%)`;
+	goNext() {
+		this.currentSlide ++;
+
+		if ( ! this.loop ) {
+			this.prev.classList.remove( 'inactive' );
+			this.prev.setAttribute( 'aria-disabled', 'false' );
+			this.prev.removeAttribute( 'disabled' );
+
+			if ( this.currentSlide === this.totalSlides - 1 ) {
+				this.next.classList.add( 'inactive' );
+				this.next.setAttribute( 'aria-disabled', 'true' );
+				this.next.setAttribute( 'disabled', '' );
+			}
+		}
 	}
 
 	generateStyles() {
 		return `
 .hero-slider {
 	height: 100vh;
+	margin: 0;
 	overflow: hidden;
+	padding: 0;
 	position: relative;
 }
 
@@ -170,6 +208,19 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 
 .next {
 	right: 1rem;
+}
+
+.translucent {
+	opacity: 0.75;
+}
+
+::slotted(.content) {
+	left: 50%;
+	margin: 0;
+	position: absolute;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 1;
 }
 
 ::slotted(img) {

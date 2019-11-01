@@ -5,7 +5,11 @@
 	<link rel="stylesheet" href="./assets/css/styles.css" />
 </head>
 <body>
-	<hero-slider>
+	<hero-slider loop>
+		<header class="content" slot="title">
+			<h1>Hero Slider Component</h1>
+			<h2>A web component demo</h2>
+		</header>
 		<img slot="slides" src="./assets/images/aurora.jpg" alt="Aurora Borealis" />
 		<img slot="slides" src="./assets/images/coyote-buttes.jpg" alt="Coyote Buttes, Arizona" />
 		<img slot="slides" src="./assets/images/mountains.jpg" alt="Some mountains" />
