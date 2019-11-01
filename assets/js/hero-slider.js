@@ -1,5 +1,6 @@
 /**
  * Class definition for Hero Slider component.
+ * The name of any custom element must be a string with at least one hyphen/dash.
  */
 customElements.define( 'hero-slider', class extends HTMLElement {
 	constructor() {
@@ -7,19 +8,37 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 
 		// Attach shadow DOM.
 		const shadowRoot = this.attachShadow( { mode: 'open' } );
+		
+		// Set initial state data.
+		this.setInitialState();
 
+		// Generate markup and attach event listeners.
 		this.generateMarkup( shadowRoot );
-		this.totalSlides = this.querySelectorAll( 'img' ).length;
-		this.currentSlide = 0;
-		this.attachEvents();
+		this.attachEventListeners();
 	}
 
+	/**
+	 * A helper method to set any initial state properties/data the component needs.
+	 */
+	setInitialState() {
+		this.totalSlides = this.querySelectorAll( 'img' ).length;
+		this.currentSlide = 0;
+	}
+
+	/**
+	 * Generate HTML for the component's shadow DOM.
+	 * 
+	 * This defines the base markup as well as any slots that can receive user-defined
+	 * child elements.
+	 * 
+	 * @param {object} shadowDOM Shadow DOM attached to this component.
+	 */
 	generateMarkup( shadowDOM ) {
 		const style = document.createElement( 'style' );
 		const container = document.createElement( 'header' );
 		const slides = document.createElement( 'slot' );
 		
-		// Cache these elements for future interaction
+		// Cache these elements for future interaction.
 		this.div = document.createElement( 'div' );
 		this.prev = document.createElement( 'button' );
 		this.next = document.createElement( 'button' );
@@ -51,7 +70,10 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 
 	}
 
-	attachEvents() {
+	/**
+	 * Add any event listeners the component needs.
+	 */
+	attachEventListeners() {
 		const buttons = Array.from( this.shadowRoot.querySelectorAll( 'button' ) );
 
 		buttons.forEach( ( button ) => {
@@ -59,6 +81,12 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 		} );
 	}
 
+	/**
+	 * Event handler for this component's prev/next buttons.
+	 * Advances slides and sets properties for prev/next buttons.
+	 * 
+	 * @param {event} e Click event.
+	 */
 	handleClick( e ) {
 		const button = e.currentTarget;
 		const action = button.getAttribute( 'name' );
@@ -151,7 +179,5 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 	width: 100%;
 }
 `;
-
-		return css;
 	}
 } );
