@@ -49,19 +49,20 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 		this.prev.className = 'prev';
 		this.prev.textContent = '⇠ Previous';
 
+		this.next.className = 'next';
+		this.next.setAttribute( 'name', 'next' );
+		this.next.textContent = 'Next ⇢';
+
 		if ( ! this.loop ) {
 			this.prev.classList.add( 'inactive' );
 			this.prev.setAttribute( 'name', 'prev' );
 			this.prev.setAttribute( 'aria-disabled', 'true' );
 			this.prev.setAttribute( 'disabled', '' );
+			this.next.setAttribute( 'aria-disabled', 'false' );
 		}
-
-		this.next.className = 'next';
-		this.next.setAttribute( 'name', 'next' );
-		this.next.setAttribute( 'aria-disabled', 'false' );
-		this.next.textContent = 'Next ⇢';
 		
 		container.className = 'hero-slider';
+
 		this.div.className = 'slides';
 		if ( this.translucent ) this.div.classList.add( 'translucent' );
 
