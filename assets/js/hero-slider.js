@@ -80,7 +80,6 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 		container.appendChild( this.div );
 		shadowDOM.appendChild( style );
 		shadowDOM.appendChild( container );
-
 	}
 
 	/**
@@ -117,8 +116,6 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 		if ( this.currentSlide === this.totalSlides ) {
 			this.currentSlide = 0;
 		}
-
-		console.log( this.currentSlide );
 
 		// Move the slides according to currently active slide.
 		this.div.style = `transform: translateX(-${ this.currentSlide * 100 }%)`;
@@ -226,7 +223,7 @@ customElements.define( 'hero-slider', class extends HTMLElement {
 
 ::slotted(img) {
 	display: block;
-	height: 100%;
+	height: auto;
 	object-fit: cover;
 	width: 100%;
 }
